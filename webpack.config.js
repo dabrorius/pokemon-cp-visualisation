@@ -15,4 +15,7 @@ module.exports = {
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' }
     ]
   },
+  devServer: {
+    contentBase: path.resolve(__dirname, './src'),  // New
+  },
 };

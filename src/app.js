@@ -1,2 +1,2 @@
 var x = 'Wizard';
-console.log(`Hello ${x}!`);
+alert(`Hello ${x}!`);
