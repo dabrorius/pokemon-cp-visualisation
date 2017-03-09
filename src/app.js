@@ -27,7 +27,6 @@ var searchMatchOpacityScale = d3.scaleOrdinal()
 
 d3.csv("pokemon.csv", function(error, rawData) {
   if (error) throw error;
-
   var data = rawData.map(function(element){
     element.MATCHED = true;
     return element;
@@ -36,7 +35,8 @@ d3.csv("pokemon.csv", function(error, rawData) {
 
   var svg = d3.select("svg");
 
-  var detailsView = new DetailsView(svg);
+  var detailsView = new DetailsView(50, 35, svg);
+  detailsView.hide();
 
   var circlesGroup = svg.append('g');
   circlesGroup.selectAll('circle').data(data).enter()
@@ -48,6 +48,7 @@ d3.csv("pokemon.csv", function(error, rawData) {
     .on('mouseover', function(d) {
       if( d['MATCHED'] ) {
         d3.select(this).attr('style', 'stroke:#555;stroke-width:3px;');
+        detailsView.show();
         detailsView.update(d['NAME'], d['MAX_CP_40'], d['MAX_HP_40'], d['ATK'], d['DEF'], d['STA']);
       }
     })
@@ -60,17 +61,7 @@ d3.csv("pokemon.csv", function(error, rawData) {
     .on('input', function(e) {
       var searchValue = this.value;
       console.log(searchValue);
-      pokemonName.text(null);
-      cpLabel.text(null);
-      hpLabel.text(null);
-      attackLabel.text(null);
-      defenseLabel.text(null);
-      staminaLabel.text(null);
-      cpBar.transition().attr('width', 0);
-      hpBar.transition().attr('width', 0);
-      attackBar.transition().attr('width', 0);
-      defenseBar.transition().attr('width', 0);
-      staminaBar.transition().attr('width', 0);
+      detailsView.hide();
       data.forEach(function(element) {
         if(element['NAME'].toLowerCase().includes(searchValue) || searchValue.length < 3) {
           element.MATCHED = true;
