@@ -1,3 +1,5 @@
+import DetailsView from './components/details_view'
+
 var d3 = require("d3");
 var height = 600;
 var width = 1000;
@@ -41,6 +43,8 @@ d3.csv("pokemon.csv", function(error, rawData) {
 
   var svg = d3.select("svg");
 
+  var detailsView = new DetailsView(svg);
+
   var detailsScreen = svg.append('g');
   var pokemonName = detailsScreen.append('text')
     .attr('x', 50)
@@ -71,6 +75,7 @@ d3.csv("pokemon.csv", function(error, rawData) {
       .attr('fill', fill)
       .attr('width', 0);
   }
+
 
   var cpBar = createBar(barXPos, barYPos, '#35ADC5');
   var hpBar = createBar(barXPos, barYPos + (barHeight + barPadding), '#B3D5D6');
