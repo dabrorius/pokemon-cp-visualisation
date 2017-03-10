@@ -17,14 +17,6 @@ var typeScale = d3.scaleOrdinal()
   .domain(['Normal', 'Fire', 'Fighting', 'Water', 'Flying', 'Grass', 'Poison', 'Electric', 'Ground', 'Psychic', 'Rock', 'Ice', 'Bug', 'Dragon', 'Ghost', 'Dark', 'Steel', 'Fairy'])
   .range(['#A8A878', '#F08030', '#C03028', '#6890F0', '#A890F0', '#78C850', '#A040A0', '#F8D030', '#E0C068', '#F85888', '#B8A038', '#98D8D8', '#A8B820', '#7038F8', '#705898', '#705848', '#B8B8D0', '#EE99AC']);
 
-var searchMatchRadiusScale = d3.scaleOrdinal()
-  .domain([true, false])
-  .range([6, 3]);
-
-var searchMatchOpacityScale = d3.scaleOrdinal()
-  .domain([true, false])
-  .range([1, 0.2]);
-
 d3.csv("pokemon.csv", function(error, rawData) {
   if (error) throw error;
   var data = rawData.map(function(element){
@@ -91,8 +83,8 @@ d3.csv("pokemon.csv", function(error, rawData) {
       }
       circlesGroup.selectAll('circle').data(data)
         .transition()
-        .attr('r', function(d) { return searchMatchRadiusScale(d['MATCHED']) } )
-        .attr('fill-opacity', function(d) { return searchMatchOpacityScale(d['MATCHED']) } )
+        .attr('r', function(d) { return d['MATCHED'] ? 6 : 3 } )
+        .attr('fill-opacity', function(d) { return d['MATCHED'] ? 1 : 0.2 } )
       labelsGroup.selectAll('text').data(data)
         .attr('visibility', function(d) { return (d['MATCHED'] && searchValue.length >= 3) ? 'visible' : 'hidden' } );
     });
