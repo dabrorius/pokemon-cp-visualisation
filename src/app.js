@@ -39,7 +39,6 @@ d3.csv("pokemon.csv", function(error, rawData) {
   detailsView.hide();
 
   var circlesGroup = svg.append('g');
-
   circlesGroup.selectAll('circle').data(data).enter()
     .append('circle')
     .attr('cx', function(d) { return cpScale(d['MAX_CP_40']); })
@@ -52,11 +51,20 @@ d3.csv("pokemon.csv", function(error, rawData) {
         detailsView.show();
         detailsView.update(d['NAME'], d['MAX_CP_40'], d['MAX_HP_40'], d['ATK'], d['DEF'], d['STA']);
       }
-      this.parentNode.appendChild(this);
     })
     .on('mouseout', function(d) {
       d3.select(this).attr('style', null);
     });
+
+  var labelsGroup = svg.append('g');
+  labelsGroup.selectAll('text').data(data).enter()
+    .append('text')
+    .attr('x', function(d) { return cpScale(d['MAX_CP_40']) + 8; })
+    .attr('y', function(d) { return hpScale(d['MAX_HP_40']) + 4; })
+    .attr('font-family', 'verdana')
+    .attr('font-size', '10px')
+    .attr('visibility', 'hidden')
+    .text(function(d) { return d['NAME']; });
 
 
   d3.select('#pokemonSearch')
@@ -75,6 +83,8 @@ d3.csv("pokemon.csv", function(error, rawData) {
         .transition()
         .attr('r', function(d) { return searchMatchRadiusScale(d['MATCHED']) } )
         .attr('fill-opacity', function(d) { return searchMatchOpacityScale(d['MATCHED']) } )
+      labelsGroup.selectAll('text').data(data)
+        .attr('visibility', function(d) { return (d['MATCHED'] && searchValue.length >= 3) ? 'visible' : 'hidden' } );
     });
 
   var axisVertical = d3.axisLeft(hpScale).ticks(5);
