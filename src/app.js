@@ -39,6 +39,7 @@ d3.csv("pokemon.csv", function(error, rawData) {
   detailsView.hide();
 
   var circlesGroup = svg.append('g');
+
   circlesGroup.selectAll('circle').data(data).enter()
     .append('circle')
     .attr('cx', function(d) { return cpScale(d['MAX_CP_40']); })
@@ -51,6 +52,7 @@ d3.csv("pokemon.csv", function(error, rawData) {
         detailsView.show();
         detailsView.update(d['NAME'], d['MAX_CP_40'], d['MAX_HP_40'], d['ATK'], d['DEF'], d['STA']);
       }
+      this.parentNode.appendChild(this);
     })
     .on('mouseout', function(d) {
       d3.select(this).attr('style', null);
