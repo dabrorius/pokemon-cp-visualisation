@@ -72,13 +72,19 @@ d3.csv("pokemon.csv", function(error, rawData) {
       var searchValue = this.value;
       console.log(searchValue);
       detailsView.hide();
+      let matchedElements = [];
       data.forEach(function(element) {
         if(element['NAME'].toLowerCase().includes(searchValue) || searchValue.length < 3) {
           element.MATCHED = true;
+          matchedElements.push(element);
         } else {
           element.MATCHED = false;
         }
       });
+      if(matchedElements.length == 1) {
+        detailsView.show();
+        detailsView.update(matchedElements[0]['NAME'], matchedElements[0]['MAX_CP_40'], matchedElements[0]['MAX_HP_40'], matchedElements[0]['ATK'], matchedElements[0]['DEF'], matchedElements[0]['STA']);
+      }
       circlesGroup.selectAll('circle').data(data)
         .transition()
         .attr('r', function(d) { return searchMatchRadiusScale(d['MATCHED']) } )
