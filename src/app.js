@@ -33,6 +33,7 @@ d3.csv("pokemon.csv", function(error, rawData) {
   });
   console.log(data);
 
+  document.getElementById("pokemonSearch").focus();
   var svg = d3.select("svg");
 
   var detailsView = new DetailsView(50, 35, svg);
@@ -54,6 +55,9 @@ d3.csv("pokemon.csv", function(error, rawData) {
     })
     .on('mouseout', function(d) {
       d3.select(this).attr('style', null);
+    })
+    .on('click', function(d) {
+      document.getElementById("pokemonSearch").focus();
     });
 
   var labelsGroup = svg.append('g');
@@ -95,7 +99,20 @@ d3.csv("pokemon.csv", function(error, rawData) {
 
   var axisVertical = d3.axisLeft(hpScale).ticks(5);
   svg.append('g').attr('transform','translate(' + padding + ', 0)').call(axisVertical);
+  svg.append('text')
+    .attr('x', 20)
+    .attr('y', 30)
+    .attr('font-family', 'verdana')
+    .attr('font-size', '14px')
+    .text('HP');
 
   var axisHorizontal = d3.axisBottom(cpScale).ticks(10);
   svg.append('g').attr('transform','translate(0,' + (height-padding) + ')').call(axisHorizontal);
+  svg.append('text')
+    .attr('x', width - 50)
+    .attr('y', height - 10)
+    .attr('font-family', 'verdana')
+    .attr('font-size', '14px')
+    .text('CP');
+
 });
