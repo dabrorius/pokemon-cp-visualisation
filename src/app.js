@@ -5,7 +5,9 @@ var height = 600;
 var width = 1000;
 var padding = 40;
 
-d3.csv("pokemon.csv", function(error, rawData) {
+var svg = d3.select("#pokemonVisualization");
+
+d3.csv(svg.attr('data-source'), function(error, rawData) {
   if (error) throw error;
   var data = rawData.map(function(element){
     element.MATCHED = true;
@@ -13,7 +15,6 @@ d3.csv("pokemon.csv", function(error, rawData) {
   });
 
   document.getElementById("pokemonSearch").focus();
-  var svg = d3.select("svg");
 
   var scatterChart = new ScatterChart(svg, data, height, width - 10, padding);
 
