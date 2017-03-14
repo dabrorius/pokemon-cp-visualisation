@@ -34,7 +34,7 @@ class ScatterChart {
       .attr('r', 6)
       .on('mouseover', function(d) {
         if( d['MATCHED'] ) {
-          d3.select(this).attr('style', 'stroke:#555;stroke-width:3px;');
+          d3.select(this).attr('style', 'stroke:#666;stroke-width:2px;');
           detailsView.show();
           detailsView.update(d['NAME'], d['MAX_CP_40'], d['MAX_HP_40'], d['ATK'], d['DEF'], d['STA']);
           this.parentNode.appendChild(this);
@@ -92,6 +92,7 @@ class ScatterChart {
       .transition()
       .attr('r', function(d) { return d['MATCHED'] ? 6 : 3 } )
       .attr('fill-opacity', function(d) { return d['MATCHED'] ? 1 : 0.2 } )
+      .attr('style', null);
     this.labelsGroup.selectAll('text').data(this.data)
       .attr('visibility', function(d) { return (d['MATCHED'] && name.length >= 3) ? 'visible' : 'hidden' } );
   }

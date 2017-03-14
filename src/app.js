@@ -15,7 +15,7 @@ d3.csv("pokemon.csv", function(error, rawData) {
   document.getElementById("pokemonSearch").focus();
   var svg = d3.select("svg");
 
-  var scatterChart = new ScatterChart(svg, data, height, width, padding);
+  var scatterChart = new ScatterChart(svg, data, height, width - 10, padding);
 
   d3.select('#pokemonSearch')
     .on('input', function(e) {
