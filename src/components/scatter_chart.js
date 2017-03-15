@@ -70,7 +70,7 @@ class ScatterChart {
     this.detailsView.hide();
     let matchedElements = [];
     this.data.forEach(function(element) {
-      if(element['NAME'].toLowerCase().includes(name) || name.length < 3) {
+      if(element['NAME'].toLowerCase().includes(name.toLowerCase()) || name.length < 3) {
         element.MATCHED = true;
         matchedElements.push(element);
       } else {
