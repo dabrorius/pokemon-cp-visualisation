@@ -1,8 +1,18 @@
-import StatsBar from './stats_bar'
+const StatsBar = require('./stats_bar');
+const d3 = require('d3');
 
 class DetailsView {
-  constructor(x, y, parent) {
-    this.d3 = require("d3");
+  constructor(x, y, data, parent) {
+    const labelPadding = 2;
+    const barYPositions = d3.scaleBand()
+      .domain(d3.range(5))
+      .rangeRound([50, 200]);
+    const maxCP = d3.max(data, function(e) { return parseInt(e['MAX_CP_40']) });
+    const maxHP = d3.max(data, function(e) { return parseInt(e['MAX_HP_40']) });
+    const maxATK = d3.max(data, function(e) { return parseInt(e['ATK']) });
+    const maxDEF = d3.max(data, function(e) { return parseInt(e['DEF']) });
+    const maxSTA = d3.max(data, function(e) { return parseInt(e['STA']) });
+
     this.root = parent.append('g').attr('transform', `translate(${x},${y})`);
 
     this.pokemonName = this.root.append('text')
@@ -10,21 +20,11 @@ class DetailsView {
       .attr('y', 16)
       .attr('font-family', 'verdana')
       .attr('font-size', '16px');
-
-    this.barLength = 100;
-    this.barHeight =  8;
-
-    const labelPadding = 2;
-
-    const barYPositions = this.d3.scaleBand()
-      .domain(this.d3.range(5))
-      .rangeRound([50, 200]);
-
-    this.cpBar = new StatsBar(0, barYPositions(0), 3670, '#35ADC5', this.root);
-    this.hpBar = new StatsBar(0, barYPositions(1), 415, '#B3D5D6', this.root);
-    this.attackBar = new StatsBar(0, barYPositions(2), 330, '#B69689', this.root);
-    this.defenseBar = new StatsBar(0, barYPositions(3), 396, '#D7B19C', this.root);
-    this.staminaBar = new StatsBar(0, barYPositions(4), 510, '#E5D1B9', this.root);
+    this.cpBar = new StatsBar(0, barYPositions(0), maxCP, '#35ADC5', this.root);
+    this.hpBar = new StatsBar(0, barYPositions(1), maxHP, '#B3D5D6', this.root);
+    this.attackBar = new StatsBar(0, barYPositions(2), maxATK, '#B69689', this.root);
+    this.defenseBar = new StatsBar(0, barYPositions(3), maxDEF, '#D7B19C', this.root);
+    this.staminaBar = new StatsBar(0, barYPositions(4), maxSTA, '#E5D1B9', this.root);
   }
 
   update(name, cp, hp, atk, def, sta) {

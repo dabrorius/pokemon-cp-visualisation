@@ -1,6 +1,7 @@
 import ScatterChart from './components/scatter_chart'
 
 var d3 = require("d3");
+
 var height = 600;
 var width = 1000;
 var padding = 60;

@@ -1,30 +1,30 @@
-import DetailsView from './details_view'
+const d3 = require('d3');
+const DetailsView = require('./details_view');
 
 class ScatterChart {
   constructor(root, data, height, width, padding) {
+
     this.root = root;
-    this.d3 = require("d3");
     this.data = data;
 
-    this.cpScale = this.d3.scaleLinear()
-      .domain([0, 3670])
+    this.cpScale = d3.scaleLinear()
+      .domain([0, d3.max(data, function(e) { return parseInt(e['MAX_CP_40']); })])
       .range([padding, width-padding]);
 
-    this.hpScale = this.d3.scaleLinear()
-      .domain([0, 100000])
+    this.hpScale = d3.scaleLinear()
+      .domain([0, d3.max(data, function(e) { return (parseInt(e['MAX_HP_40']) * parseInt(e['DEF'])); })])
       .range([height-padding, padding]);
 
-    this.typeScale = this.d3.scaleOrdinal()
+    this.typeScale = d3.scaleOrdinal()
       .domain(['Normal', 'Fire', 'Fighting', 'Water', 'Flying', 'Grass', 'Poison', 'Electric', 'Ground', 'Psychic', 'Rock', 'Ice', 'Bug', 'Dragon', 'Ghost', 'Dark', 'Steel', 'Fairy'])
       .range(['#A8A878', '#F08030', '#C03028', '#6890F0', '#A890F0', '#78C850', '#A040A0', '#F8D030', '#E0C068', '#F85888', '#B8A038', '#98D8D8', '#A8B820', '#7038F8', '#705898', '#705848', '#B8B8D0', '#EE99AC']);
 
-    var detailsView = new DetailsView(70, 55, this.root);
+    var detailsView = new DetailsView(70, 55, data, this.root);
     detailsView.hide();
     this.detailsView = detailsView;
 
     this.circlesGroup = this.root.append('g');
 
-    var d3 = this.d3;
     this.circlesGroup.selectAll('circle').data(data, this._dataKey).enter()
       .append('circle')
       .attr('id', (d) => { return `CIRCLE-${d['ID']}`; })
@@ -101,4 +101,5 @@ class ScatterChart {
     return e.ID;
   }
 }
+
 module.exports = ScatterChart;
