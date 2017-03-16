@@ -3,7 +3,6 @@ const DetailsView = require('./details_view');
 
 class ScatterChart {
   constructor(root, data, height, width, padding) {
-
     this.root = root;
     this.data = data;
 
@@ -23,39 +22,11 @@ class ScatterChart {
     detailsView.hide();
     this.detailsView = detailsView;
 
-    this.circlesGroup = this.root.append('g');
-
-    this.circlesGroup.selectAll('circle').data(data, this._dataKey).enter()
-      .append('circle')
-      .attr('id', (d) => { return `CIRCLE-${d['ID']}`; })
-      .attr('cx', (d) => { return this.cpScale(d['MAX_CP_40']); })
-      .attr('cy', (d) => { return this.hpScale(d['MAX_HP_40'] * d['DEF']); })
-      .attr('fill', (d) => { return this.typeScale(d['TYPE1']); })
-      .attr('r', 6)
-      .on('mouseover', function(d) {
-        if( d['MATCHED'] ) {
-          d3.select(this).attr('style', 'stroke:#666;stroke-width:2px;');
-          detailsView.show();
-          detailsView.update(d['NAME'], d['MAX_CP_40'], d['MAX_HP_40'], d['ATK'], d['DEF'], d['STA']);
-          this.parentNode.appendChild(this);
-        }
-      })
-      .on('mouseout', function(d) {
-        d3.select(this).attr('style', null);
-      })
-      .on('click', function(d) {
-        document.getElementById("pokemonSearch").focus();
-      });
+    this.pointsGroup = this.root.append('g');
+    this._drawPoints();
 
     this.labelsGroup = this.root.append('g');
-    this.labelsGroup.selectAll('text').data(data, this._dataKey).enter()
-      .append('text')
-      .attr('x', (d) => { return this.cpScale(d['MAX_CP_40']) + 8; })
-      .attr('y', (d) => { return this.hpScale(d['MAX_HP_40'] * d['DEF']) + 4; })
-      .attr('font-family', 'verdana')
-      .attr('font-size', '10px')
-      .attr('visibility', 'hidden')
-      .text(function(d) { return d['NAME']; });
+    this._drawLabels();
   }
 
   hpScale() {
@@ -88,13 +59,48 @@ class ScatterChart {
     });
 
 
-    this.circlesGroup.selectAll('circle').data(this.data, this._dataKey )
+    this.pointsGroup.selectAll('circle').data(this.data, this._dataKey )
       .transition()
       .attr('r', function(d) { return d['MATCHED'] ? 6 : 3 } )
       .attr('fill-opacity', function(d) { return d['MATCHED'] ? 1 : 0.2 } )
       .attr('style', null);
     this.labelsGroup.selectAll('text').data(this.data)
       .attr('visibility', function(d) { return (d['MATCHED'] && name.length >= 3) ? 'visible' : 'hidden' } );
+  }
+
+  _drawPoints() {
+    this.pointsGroup.selectAll('circle').data(this.data, this._dataKey).enter()
+      .append('circle')
+      .attr('id', (d) => { return `CIRCLE-${d['ID']}`; })
+      .attr('cx', (d) => { return this.cpScale(d['MAX_CP_40']); })
+      .attr('cy', (d) => { return this.hpScale(d['MAX_HP_40'] * d['DEF']); })
+      .attr('fill', (d) => { return this.typeScale(d['TYPE1']); })
+      .attr('r', 6)
+      .on('mouseover', function(d) {
+        if( d['MATCHED'] ) {
+          d3.select(this).attr('style', 'stroke:#666;stroke-width:2px;');
+          detailsView.show();
+          detailsView.update(d['NAME'], d['MAX_CP_40'], d['MAX_HP_40'], d['ATK'], d['DEF'], d['STA']);
+          this.parentNode.appendChild(this);
+        }
+      })
+      .on('mouseout', function(d) {
+        d3.select(this).attr('style', null);
+      })
+      .on('click', function(d) {
+        document.getElementById("pokemonSearch").focus();
+      });
+  }
+
+  _drawLabels() {
+    this.labelsGroup.selectAll('text').data(this.data, this._dataKey).enter()
+      .append('text')
+      .attr('x', (d) => { return this.cpScale(d['MAX_CP_40']) + 8; })
+      .attr('y', (d) => { return this.hpScale(d['MAX_HP_40'] * d['DEF']) + 4; })
+      .attr('font-family', 'verdana')
+      .attr('font-size', '10px')
+      .attr('visibility', 'hidden')
+      .text(function(d) { return d['NAME']; });
   }
 
   _dataKey(e) {

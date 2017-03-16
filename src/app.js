@@ -1,15 +1,16 @@
-import ScatterChart from './components/scatter_chart'
+const ScatterChart =  require('./components/scatter_chart')
+const d3 = require("d3");
 
-var d3 = require("d3");
+const height = 600;
+const width = 1000;
+const padding = 60;
 
-var height = 600;
-var width = 1000;
-var padding = 60;
+const svg = d3.select("#pokemonVisualization");
+const dataSource = svg.attr('data-source');
 
-var svg = d3.select("#pokemonVisualization");
-
-d3.csv(svg.attr('data-source'), function(error, rawData) {
+d3.csv(dataSource, function(error, rawData) {
   if (error) throw error;
+
   var data = rawData.map(function(element){
     element.MATCHED = true;
     return element;
@@ -24,6 +25,7 @@ d3.csv(svg.attr('data-source'), function(error, rawData) {
       var searchValue = this.value;
       scatterChart.highlight(searchValue);
     });
+
   var axisVertical = d3.axisLeft(scatterChart.hpScale).ticks(5);
   svg.append('g').attr('transform','translate(' + padding + ', 0)').call(axisVertical);
   svg.append('text')
@@ -41,5 +43,4 @@ d3.csv(svg.attr('data-source'), function(error, rawData) {
     .attr('font-family', 'verdana')
     .attr('font-size', '14px')
     .text('CP');
-
 });
