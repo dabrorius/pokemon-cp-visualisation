@@ -18,9 +18,8 @@ class ScatterChart {
       .domain(['Normal', 'Fire', 'Fighting', 'Water', 'Flying', 'Grass', 'Poison', 'Electric', 'Ground', 'Psychic', 'Rock', 'Ice', 'Bug', 'Dragon', 'Ghost', 'Dark', 'Steel', 'Fairy'])
       .range(['#A8A878', '#F08030', '#C03028', '#6890F0', '#A890F0', '#78C850', '#A040A0', '#F8D030', '#E0C068', '#F85888', '#B8A038', '#98D8D8', '#A8B820', '#7038F8', '#705898', '#705848', '#B8B8D0', '#EE99AC']);
 
-    var detailsView = new DetailsView(70, 55, data, this.root);
-    detailsView.hide();
-    this.detailsView = detailsView;
+    this.detailsView = new DetailsView(70, 55, data, this.root);
+    this.detailsView.hide();
 
     this.pointsGroup = this.root.append('g');
     this._drawPoints();
@@ -69,6 +68,7 @@ class ScatterChart {
   }
 
   _drawPoints() {
+    var chart = this;
     this.pointsGroup.selectAll('circle').data(this.data, this._dataKey).enter()
       .append('circle')
       .attr('id', (d) => { return `CIRCLE-${d['ID']}`; })
@@ -79,8 +79,8 @@ class ScatterChart {
       .on('mouseover', function(d) {
         if( d['MATCHED'] ) {
           d3.select(this).attr('style', 'stroke:#666;stroke-width:2px;');
-          detailsView.show();
-          detailsView.update(d['NAME'], d['MAX_CP_40'], d['MAX_HP_40'], d['ATK'], d['DEF'], d['STA']);
+          chart.detailsView.show();
+          chart.detailsView.update(d['NAME'], d['MAX_CP_40'], d['MAX_HP_40'], d['ATK'], d['DEF'], d['STA']);
           this.parentNode.appendChild(this);
         }
       })
