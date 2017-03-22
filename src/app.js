@@ -8,7 +8,6 @@ const dataSource = svg.attr('data-source');
 
 const height = svg.node().getBoundingClientRect().height;
 const width = svg.node().getBoundingClientRect().width;
-const padding = 60;
 
 d3.csv(dataSource, function(error, rawData) {
   if (error) throw error;
@@ -20,7 +19,7 @@ d3.csv(dataSource, function(error, rawData) {
 
   document.getElementById("pokemonSearch").focus();
 
-  var scatterChart = new ScatterChart(svg, data, height, width - 10, padding);
+  var scatterChart = new ScatterChart(svg, data, {height: height, width: width});
   window.chart = scatterChart;
 
   d3.select(window).on("resize", function() {
@@ -37,8 +36,8 @@ d3.csv(dataSource, function(error, rawData) {
       scatterChart.highlight(searchValue);
     });
 
-  var axisVertical = d3.axisLeft(scatterChart.hpScale).ticks(5);
-  svg.append('g').attr('transform','translate(' + padding + ', 0)').call(axisVertical);
+  var axisVertical = d3.axisLeft(scatterChart.verticalScale).ticks(5);
+  svg.append('g').attr('transform','translate(60, 0)').call(axisVertical);
   svg.append('text')
     .attr('x', 15)
     .attr('y', 50)
@@ -46,8 +45,8 @@ d3.csv(dataSource, function(error, rawData) {
     .attr('font-size', '14px')
     .text('HP×DEF');
 
-  var axisHorizontal = d3.axisBottom(scatterChart.cpScale).ticks(10);
-  svg.append('g').attr('class', 'x axis').attr('transform','translate(0,' + (height-padding) + ')').call(axisHorizontal);
+  var axisHorizontal = d3.axisBottom(scatterChart.horizontalScale).ticks(10);
+  svg.append('g').attr('class', 'x axis').attr('transform','translate(0,' + (height-60) + ')').call(axisHorizontal);
   svg.append('text')
     .attr('x', width - 80)
     .attr('y', height - 40)

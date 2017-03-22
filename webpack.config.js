@@ -18,4 +18,5 @@ module.exports = {
   devServer: {
     contentBase: path.resolve(__dirname, './src'),  // New
   },
+  devtool: 'source-map'
 };

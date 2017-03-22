@@ -2,10 +2,13 @@ const d3 = require('d3');
 const DetailsView = require('./details_view');
 
 class ScatterChart {
-  constructor(root, data, height, width, padding) {
+  constructor(root, data, options) {
     this.root = root;
     this.data = data;
-    this.padding = padding;
+
+    this.sizeSettings = {width: 500, height: 500, padding: 60}
+    let sizeSettings = this.sizeSettings;
+    Object.assign(this.sizeSettings, options);
 
     this.verticalDomain = 'STA';
     var verticalDomain = this.verticalDomain;
@@ -13,13 +16,13 @@ class ScatterChart {
     this.horizontalDomain = 'MAX_CP_40';
     var horizontalDomain = this.horizontalDomain;
 
-    this.cpScale = d3.scaleLinear()
+    this.horizontalScale = d3.scaleLinear()
       .domain([0, d3.max(data, function(e) { return parseInt(e[horizontalDomain]); })])
-      .range([padding, width-padding]);
+      .range([sizeSettings.padding, sizeSettings.width-sizeSettings.padding]);
 
-    this.hpScale = d3.scaleLinear()
+    this.verticalScale = d3.scaleLinear()
       .domain([0, d3.max(data, function(e) { return (parseInt(e[verticalDomain])); })])
-      .range([height-padding, padding]);
+      .range([sizeSettings.height-sizeSettings.padding, sizeSettings.padding]);
 
     this.typeScale = d3.scaleOrdinal()
       .domain(['Normal', 'Fire', 'Fighting', 'Water', 'Flying', 'Grass', 'Poison', 'Electric', 'Ground', 'Psychic', 'Rock', 'Ice', 'Bug', 'Dragon', 'Ghost', 'Dark', 'Steel', 'Fairy'])
@@ -37,44 +40,44 @@ class ScatterChart {
 
   updateVerticalDomain(newDomain) {
     this.verticalDomain = newDomain;
-    this.hpScale.domain([0, d3.max(this.data, function(e) { return (parseInt(e[newDomain])); })]);
+    this.verticalScale.domain([0, d3.max(this.data, function(e) { return (parseInt(e[newDomain])); })]);
     this.pointsGroup.selectAll('circle').data(this.data, this._dataKey)
       .transition()
       .duration(1000)
-      .attr('cy', (d) => { return this.hpScale(d[newDomain]); });
+      .attr('cy', (d) => { return this.verticalScale(d[newDomain]); });
     this.labelsGroup.selectAll('text').data(this.data, this._dataKey)
       .transition()
       .duration(1000)
-      .attr('y', (d) => { return this.hpScale(d[newDomain]) + 8; })
+      .attr('y', (d) => { return this.verticalScale(d[newDomain]) + 8; })
   }
 
   updateHorizontalDomain(newDomain) {
     this.verticalDomain = newDomain;
-    this.cpScale.domain([0, d3.max(this.data, function(e) { return (parseInt(e[newDomain])); })]);
+    this.horizontalScale.domain([0, d3.max(this.data, function(e) { return (parseInt(e[newDomain])); })]);
     this.pointsGroup.selectAll('circle').data(this.data, this._dataKey)
       .transition()
       .duration(1000)
-      .attr('cx', (d) => { return this.cpScale(d[newDomain]); });
+      .attr('cx', (d) => { return this.horizontalScale(d[newDomain]); });
     this.labelsGroup.selectAll('text').data(this.data, this._dataKey)
       .transition()
       .duration(1000)
-      .attr('x', (d) => { return this.cpScale(d[newDomain]) + 8; })
+      .attr('x', (d) => { return this.horizontalScale(d[newDomain]) + 8; })
   }
 
   updateWidth(newWidth) {
-    this.cpScale.range([this.padding, newWidth - this.padding]);
+    this.horizontalScale.range([this.sizeSettings.padding, newWidth - this.sizeSettings.padding]);
     this.pointsGroup.selectAll('circle').data(this.data, this._dataKey)
-      .attr('cx', (d) => { return this.cpScale(d[horizontalDomain]); });
+      .attr('cx', (d) => { return this.horizontalScale(d[horizontalDomain]); });
     this.labelsGroup.selectAll('text').data(this.data, this._dataKey)
-      .attr('x', (d) => { return this.cpScale(d[horizontalDomain]) + 8; })
+      .attr('x', (d) => { return this.horizontalScale(d[horizontalDomain]) + 8; })
   }
 
-  hpScale() {
-    return this.hpScale;
+  verticalScale() {
+    return this.verticalScale;
   }
 
-  cpScale() {
-    return this.cpScale;
+  horizontalScale() {
+    return this.horizontalScale;
   }
 
   highlight(name) {
@@ -119,8 +122,8 @@ class ScatterChart {
     this.pointsGroup.selectAll('circle').data(this.data, this._dataKey).enter()
       .append('circle')
       .attr('id', (d) => { return `CIRCLE-${d['ID']}`; })
-      .attr('cx', (d) => { return this.cpScale(d[horizontalDomain]); })
-      .attr('cy', (d) => { return this.hpScale(d[verticalDomain]); })
+      .attr('cx', (d) => { return this.horizontalScale(d[horizontalDomain]); })
+      .attr('cy', (d) => { return this.verticalScale(d[verticalDomain]); })
       .attr('fill', (d) => { return this.typeScale(d['TYPE1']); })
       .attr('r', 6)
       .on('mouseover', function(d) {
@@ -148,8 +151,8 @@ class ScatterChart {
     this.labelsGroup.selectAll('text').data(this.data, this._dataKey).enter()
       .append('text')
       .attr('id', (d) => { return `LABEL-${d['ID']}`; })
-      .attr('x', (d) => { return this.cpScale(d[horizontalDomain]) + 8; })
-      .attr('y', (d) => { return this.hpScale(d[verticalDomain]) + 4; })
+      .attr('x', (d) => { return this.horizontalScale(d[horizontalDomain]) + 8; })
+      .attr('y', (d) => { return this.verticalScale(d[verticalDomain]) + 4; })
       .attr('font-family', 'verdana')
       .attr('font-size', '10px')
       .attr('visibility', 'hidden')
