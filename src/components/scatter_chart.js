@@ -5,6 +5,7 @@ class ScatterChart {
   constructor(root, data, height, width, padding) {
     this.root = root;
     this.data = data;
+    this.padding = padding;
 
     this.cpScale = d3.scaleLinear()
       .domain([0, d3.max(data, function(e) { return parseInt(e['MAX_CP_40']); })])
@@ -26,6 +27,12 @@ class ScatterChart {
 
     this.labelsGroup = this.root.append('g');
     this._drawLabels();
+  }
+
+  updateWidth(newWidth) {
+    this.cpScale.range([this.padding, newWidth - this.padding]);
+    this.pointsGroup.selectAll('circle').data(this.data, this._dataKey)
+      .attr('cx', (d) => { return this.cpScale(d['MAX_CP_40']); });
   }
 
   hpScale() {
@@ -75,7 +82,7 @@ class ScatterChart {
       .attr('cx', (d) => { return this.cpScale(d['MAX_CP_40']); })
       .attr('cy', (d) => { return this.hpScale(d['MAX_HP_40'] * d['DEF']); })
       .attr('fill', (d) => { return this.typeScale(d['TYPE1']); })
-      .attr('r', 6)
+      .attr('r', 4)
       .on('mouseover', function(d) {
         if( d['MATCHED'] ) {
           d3.select(this).attr('style', 'stroke:#666;stroke-width:2px;');
