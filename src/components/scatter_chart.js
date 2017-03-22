@@ -47,7 +47,7 @@ class ScatterChart {
   }
 
   updateHorizontalDomain(newDomain) {
-    this.verticalDomain = newDomain;
+    this.horizontalDomain = newDomain;
     this.horizontalScale.domain([0, d3.max(this.data, function(e) { return (parseInt(e[newDomain])); })]);
     this.pointsGroup.selectAll('circle').data(this.data, this._dataKey)
       .transition()
