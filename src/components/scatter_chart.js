@@ -33,6 +33,8 @@ class ScatterChart {
     this.cpScale.range([this.padding, newWidth - this.padding]);
     this.pointsGroup.selectAll('circle').data(this.data, this._dataKey)
       .attr('cx', (d) => { return this.cpScale(d['MAX_CP_40']); });
+    this.labelsGroup.selectAll('text').data(this.data, this._dataKey)
+      .attr('x', (d) => { return this.cpScale(d['MAX_CP_40']) + 8; })
   }
 
   hpScale() {
@@ -76,25 +78,29 @@ class ScatterChart {
 
   _drawPoints() {
     var chart = this;
+    var root = this.root;
+
     this.pointsGroup.selectAll('circle').data(this.data, this._dataKey).enter()
       .append('circle')
       .attr('id', (d) => { return `CIRCLE-${d['ID']}`; })
       .attr('cx', (d) => { return this.cpScale(d['MAX_CP_40']); })
       .attr('cy', (d) => { return this.hpScale(d['MAX_HP_40'] * d['DEF']); })
       .attr('fill', (d) => { return this.typeScale(d['TYPE1']); })
-      .attr('r', 4)
+      .attr('r', 6)
       .on('mouseover', function(d) {
         if( d['MATCHED'] ) {
           d3.select(this).attr('style', 'stroke:#666;stroke-width:2px;');
-          chart.detailsView.show();
-          chart.detailsView.update(d['NAME'], d['MAX_CP_40'], d['MAX_HP_40'], d['ATK'], d['DEF'], d['STA']);
           this.parentNode.appendChild(this);
+          root.select(`#LABEL-${d['ID']}`).attr('visibility', 'visible');
         }
       })
       .on('mouseout', function(d) {
         d3.select(this).attr('style', null);
+        root.select(`#LABEL-${d['ID']}`).attr('visibility', 'hidden');
       })
       .on('click', function(d) {
+        chart.detailsView.show();
+        chart.detailsView.update(d['NAME'], d['MAX_CP_40'], d['MAX_HP_40'], d['ATK'], d['DEF'], d['STA']);
         document.getElementById("pokemonSearch").focus();
       });
   }
@@ -102,6 +108,7 @@ class ScatterChart {
   _drawLabels() {
     this.labelsGroup.selectAll('text').data(this.data, this._dataKey).enter()
       .append('text')
+      .attr('id', (d) => { return `LABEL-${d['ID']}`; })
       .attr('x', (d) => { return this.cpScale(d['MAX_CP_40']) + 8; })
       .attr('y', (d) => { return this.hpScale(d['MAX_HP_40'] * d['DEF']) + 4; })
       .attr('font-family', 'verdana')
