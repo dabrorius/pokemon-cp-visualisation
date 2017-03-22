@@ -5,24 +5,19 @@ class ScatterChart {
   constructor(root, data, options) {
     this.root = root;
     this.data = data;
-
     this.sizeSettings = {width: 500, height: 500, padding: 60}
-    let sizeSettings = this.sizeSettings;
     Object.assign(this.sizeSettings, options);
 
     this.verticalDomain = 'STA';
-    var verticalDomain = this.verticalDomain;
-
     this.horizontalDomain = 'MAX_CP_40';
-    var horizontalDomain = this.horizontalDomain;
 
     this.horizontalScale = d3.scaleLinear()
-      .domain([0, d3.max(data, function(e) { return parseInt(e[horizontalDomain]); })])
-      .range([sizeSettings.padding, sizeSettings.width-sizeSettings.padding]);
+      .domain([0, d3.max(data, (e) => { return parseInt(e[this.horizontalDomain]); })])
+      .range([this.sizeSettings.padding, this.sizeSettings.width - this.sizeSettings.padding]);
 
     this.verticalScale = d3.scaleLinear()
-      .domain([0, d3.max(data, function(e) { return (parseInt(e[verticalDomain])); })])
-      .range([sizeSettings.height-sizeSettings.padding, sizeSettings.padding]);
+      .domain([0, d3.max(data, (e) => { return (parseInt(e[this.verticalDomain])); })])
+      .range([this.sizeSettings.height - this.sizeSettings.padding, this.sizeSettings.padding]);
 
     this.typeScale = d3.scaleOrdinal()
       .domain(['Normal', 'Fire', 'Fighting', 'Water', 'Flying', 'Grass', 'Poison', 'Electric', 'Ground', 'Psychic', 'Rock', 'Ice', 'Bug', 'Dragon', 'Ghost', 'Dark', 'Steel', 'Fairy'])
@@ -81,8 +76,6 @@ class ScatterChart {
   }
 
   highlight(name) {
-    var verticalDomain = this.verticalDomain;
-
     this.detailsView.hide();
     let matchedElements = [];
     this.data.forEach(function(element) {
@@ -95,7 +88,7 @@ class ScatterChart {
     });
     if(matchedElements.length == 1) {
       this.detailsView.show();
-      this.detailsView.update(matchedElements[0]['NAME'], matchedElements[0][horizontalDomain], matchedElements[0][verticalDomain], matchedElements[0]['ATK'], matchedElements[0]['DEF'], matchedElements[0]['STA']);
+      this.detailsView.update(matchedElements[0]['NAME'], matchedElements[0][this.horizontalDomain], matchedElements[0][this.verticalDomain], matchedElements[0]['ATK'], matchedElements[0]['DEF'], matchedElements[0]['STA']);
     }
 
     matchedElements.forEach((e) => {
@@ -116,14 +109,12 @@ class ScatterChart {
   _drawPoints() {
     var chart = this;
     var root = this.root;
-    var verticalDomain = this.verticalDomain;
-    var horizontalDomain = this.horizontalDomain;
 
     this.pointsGroup.selectAll('circle').data(this.data, this._dataKey).enter()
       .append('circle')
       .attr('id', (d) => { return `CIRCLE-${d['ID']}`; })
-      .attr('cx', (d) => { return this.horizontalScale(d[horizontalDomain]); })
-      .attr('cy', (d) => { return this.verticalScale(d[verticalDomain]); })
+      .attr('cx', (d) => { return this.horizontalScale(d[this.horizontalDomain]); })
+      .attr('cy', (d) => { return this.verticalScale(d[this.verticalDomain]); })
       .attr('fill', (d) => { return this.typeScale(d['TYPE1']); })
       .attr('r', 6)
       .on('mouseover', function(d) {
@@ -139,20 +130,17 @@ class ScatterChart {
       })
       .on('click', function(d) {
         chart.detailsView.show();
-        chart.detailsView.update(d['NAME'], d[horizontalDomain], d[verticalDomain], d['ATK'], d['DEF'], d['STA']);
+        chart.detailsView.update(d['NAME'], d[this.horizontalDomain], d[this.verticalDomain], d['ATK'], d['DEF'], d['STA']);
         document.getElementById("pokemonSearch").focus();
       });
   }
 
   _drawLabels() {
-    var verticalDomain = this.verticalDomain;
-    var horizontalDomain = this.horizontalDomain;
-
     this.labelsGroup.selectAll('text').data(this.data, this._dataKey).enter()
       .append('text')
       .attr('id', (d) => { return `LABEL-${d['ID']}`; })
-      .attr('x', (d) => { return this.horizontalScale(d[horizontalDomain]) + 8; })
-      .attr('y', (d) => { return this.verticalScale(d[verticalDomain]) + 4; })
+      .attr('x', (d) => { return this.horizontalScale(d[this.horizontalDomain]) + 8; })
+      .attr('y', (d) => { return this.verticalScale(d[this.verticalDomain]) + 4; })
       .attr('font-family', 'verdana')
       .attr('font-size', '10px')
       .attr('visibility', 'hidden')
