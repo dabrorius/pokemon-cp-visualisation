@@ -13,6 +13,18 @@
   </head>
   <body>
     <div id="pokemon-go-visualization">
+      <select id='vertical-axis-select'>
+        <option value="MAX_CP_40">CP</option>
+        <option value="ATK">Attack</option>
+        <option value="DEF">Defense</option>
+        <option value="STA" SELECTED>Stamina</option>
+      </select>
+      <select id='horizontal-axis-select'>
+        <option value="MAX_CP_40" SELECTED>CP</option>
+        <option value="ATK">Attack</option>
+        <option value="DEF">Defense</option>
+        <option value="STA">Stamina</option>
+      </select>
       <input id='pokemonSearch' placeholder="enter pokemon name here...">
       <svg id='pokemonVisualization' data-source='pokemon.csv' width='100%' height=600></svg>
     </div>

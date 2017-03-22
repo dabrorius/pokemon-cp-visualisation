@@ -26,6 +26,8 @@ class ScatterChart {
     this.detailsView = new DetailsView(70, 55, data, this.root);
     this.detailsView.hide();
 
+    this.pokemonPointsGroup = this.root.append('g').attr('id','pokemon-points');
+
     this.pointsGroup = this.root.append('g');
     this._drawPoints();
 
@@ -62,9 +64,9 @@ class ScatterChart {
   updateWidth(newWidth) {
     this.horizontalScale.range([this.sizeSettings.padding, newWidth - this.sizeSettings.padding]);
     this.pointsGroup.selectAll('circle').data(this.data, this._dataKey)
-      .attr('cx', (d) => { return this.horizontalScale(d[horizontalDomain]); });
+      .attr('cx', (d) => { return this.horizontalScale(d[this.horizontalDomain]); });
     this.labelsGroup.selectAll('text').data(this.data, this._dataKey)
-      .attr('x', (d) => { return this.horizontalScale(d[horizontalDomain]) + 8; })
+      .attr('x', (d) => { return this.horizontalScale(d[this.horizontalDomain]) + 8; })
   }
 
   verticalScale() {
