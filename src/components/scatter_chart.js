@@ -7,12 +7,15 @@ class ScatterChart {
     this.data = data;
     this.padding = padding;
 
+    this.verticalDomain = 'STA';
+    var verticalDomain = this.verticalDomain;
+
     this.cpScale = d3.scaleLinear()
       .domain([0, d3.max(data, function(e) { return parseInt(e['MAX_CP_40']); })])
       .range([padding, width-padding]);
 
     this.hpScale = d3.scaleLinear()
-      .domain([0, d3.max(data, function(e) { return (parseInt(e['MAX_HP_40']) * parseInt(e['DEF'])); })])
+      .domain([0, d3.max(data, function(e) { return (parseInt(e[verticalDomain])); })])
       .range([height-padding, padding]);
 
     this.typeScale = d3.scaleOrdinal()
@@ -27,6 +30,19 @@ class ScatterChart {
 
     this.labelsGroup = this.root.append('g');
     this._drawLabels();
+  }
+
+  updateVerticalDomain(newDomain) {
+    this.verticalDomain = newDomain;
+    this.hpScale.domain([0, d3.max(this.data, function(e) { return (parseInt(e[newDomain])); })]);
+    this.pointsGroup.selectAll('circle').data(this.data, this._dataKey)
+      .transition()
+      .duration(1000)
+      .attr('cy', (d) => { return this.hpScale(d[newDomain]); });
+    this.labelsGroup.selectAll('text').data(this.data, this._dataKey)
+      .transition()
+      .duration(1000)
+      .attr('y', (d) => { return this.hpScale(d[newDomain]) + 8; })
   }
 
   updateWidth(newWidth) {
@@ -46,6 +62,8 @@ class ScatterChart {
   }
 
   highlight(name) {
+    var verticalDomain = this.verticalDomain;
+
     this.detailsView.hide();
     let matchedElements = [];
     this.data.forEach(function(element) {
@@ -58,7 +76,7 @@ class ScatterChart {
     });
     if(matchedElements.length == 1) {
       this.detailsView.show();
-      this.detailsView.update(matchedElements[0]['NAME'], matchedElements[0]['MAX_CP_40'], matchedElements[0]['MAX_HP_40'], matchedElements[0]['ATK'], matchedElements[0]['DEF'], matchedElements[0]['STA']);
+      this.detailsView.update(matchedElements[0]['NAME'], matchedElements[0]['MAX_CP_40'], matchedElements[0][verticalDomain], matchedElements[0]['ATK'], matchedElements[0]['DEF'], matchedElements[0]['STA']);
     }
 
     matchedElements.forEach((e) => {
@@ -79,12 +97,13 @@ class ScatterChart {
   _drawPoints() {
     var chart = this;
     var root = this.root;
+    var verticalDomain = this.verticalDomain;
 
     this.pointsGroup.selectAll('circle').data(this.data, this._dataKey).enter()
       .append('circle')
       .attr('id', (d) => { return `CIRCLE-${d['ID']}`; })
       .attr('cx', (d) => { return this.cpScale(d['MAX_CP_40']); })
-      .attr('cy', (d) => { return this.hpScale(d['MAX_HP_40'] * d['DEF']); })
+      .attr('cy', (d) => { return this.hpScale(d[verticalDomain]); })
       .attr('fill', (d) => { return this.typeScale(d['TYPE1']); })
       .attr('r', 6)
       .on('mouseover', function(d) {
@@ -100,17 +119,19 @@ class ScatterChart {
       })
       .on('click', function(d) {
         chart.detailsView.show();
-        chart.detailsView.update(d['NAME'], d['MAX_CP_40'], d['MAX_HP_40'], d['ATK'], d['DEF'], d['STA']);
+        chart.detailsView.update(d['NAME'], d['MAX_CP_40'], d[verticalDomain], d['ATK'], d['DEF'], d['STA']);
         document.getElementById("pokemonSearch").focus();
       });
   }
 
   _drawLabels() {
+    var verticalDomain = this.verticalDomain;
+
     this.labelsGroup.selectAll('text').data(this.data, this._dataKey).enter()
       .append('text')
       .attr('id', (d) => { return `LABEL-${d['ID']}`; })
       .attr('x', (d) => { return this.cpScale(d['MAX_CP_40']) + 8; })
-      .attr('y', (d) => { return this.hpScale(d['MAX_HP_40'] * d['DEF']) + 4; })
+      .attr('y', (d) => { return this.hpScale(d[verticalDomain]) + 4; })
       .attr('font-family', 'verdana')
       .attr('font-size', '10px')
       .attr('visibility', 'hidden')

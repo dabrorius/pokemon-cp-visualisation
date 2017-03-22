@@ -21,6 +21,7 @@ d3.csv(dataSource, function(error, rawData) {
   document.getElementById("pokemonSearch").focus();
 
   var scatterChart = new ScatterChart(svg, data, height, width - 10, padding);
+  window.chart = scatterChart;
 
   d3.select(window).on("resize", function() {
     let newWidth = svg.node().getBoundingClientRect().width;
